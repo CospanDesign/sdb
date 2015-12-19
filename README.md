@@ -14,6 +14,7 @@ http://www.ohwr.org/projects/sdb/wiki
 SDB Parser/Generator is a tool used to both generate and parse SDB ROMs.
 
 For reference a parsed SDB output can look something like this:
+```
 
 SDB
 Bus: top        @ 0x0000000000000000 : Size: 0x200000000
@@ -38,10 +39,13 @@ Number of components: 2
      Address:        0x0000000000000000-0x0000000000800000 : Size: 0x00800000
      Vendor:Product: 800000000000C594:00000000
 
+```
+
 This describes an internal structure of an FPGA with a main bus called 'top' and two sub busses called 'peripheral' and 'memory'. The peripheral bus contains 3 components. The information for each of the entries defines the address range and size. Some of the entries contain other information such as 'Major' and 'Minor' types which, for a 'Nysa' implementation is used to identify the type of device. This is not explicitly defined by SDB at the moment.
 
 SDB will generate a ROM that is downloaded to the FPGA. For reference the ROM looks like the following (with comments added)
 
+```
 //Bus (top bus)
 5344422D 00020100 00000000 00000000
 00000002 00000000 80000000 0000C594
@@ -114,5 +118,5 @@ SDB will generate a ROM that is downloaded to the FPGA. For reference the ROM lo
 00000000 00000000 00000000 00000000
 00000000 00000000 00000000 000000FF
 
-
+```
 
