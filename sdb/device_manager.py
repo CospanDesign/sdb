@@ -30,7 +30,7 @@ from collections import OrderedDict as odict
 
 __author__ = "dave.mccoy@cospandesign.com (Dave McCoy)"
 
-LOCAL_DEVICE_LIST = os.path.join(os.path.dirname(__file__), os.pardir, "data", "local_devices", "devices.json")
+LOCAL_DEVICE_LIST = os.path.join(os.path.dirname(__file__), "data", "local_devices", "devices.json")
 LOCAL_DEVICE_LIST = os.path.abspath(LOCAL_DEVICE_LIST)
 
 def get_device_list():

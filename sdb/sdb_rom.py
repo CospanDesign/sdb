@@ -22,9 +22,9 @@ from array import array as Array
 import argparse
 import collections
 
-from sdb import SDB
-from sdb import SDBInfo
-from sdb import SDBError
+from sdb_core import SDB
+from sdb_core import SDBInfo
+from sdb_core import SDBError
 
 SDB_INTERCONNECT_MAGIC  = 0x5344422D
 SDB_BUS_TYPE_WISHBONE   = 0x00

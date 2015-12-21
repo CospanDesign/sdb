@@ -22,9 +22,9 @@ from datetime import datetime
 from array import array as Array
 import collections
 
-from sdb import SDBInfo
-from sdb import SDBWarning
-from sdb import SDBError
+from sdb_core import SDBInfo
+from sdb_core import SDBWarning
+from sdb_core import SDBError
 
 import string
 

@@ -23,9 +23,9 @@ import device_manager
 from sdb_component import SDBComponent as sdbc
 from sdb_component import is_valid_bus_type
 
-from sdb import SDBInfo
-from sdb import SDBWarning
-from sdb import SDBError
+from sdb_core import SDBInfo
+from sdb_core import SDBWarning
+from sdb_core import SDBError
 
 class SOMComponent(object):
 

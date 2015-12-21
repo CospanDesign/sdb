@@ -1,0 +1,109 @@
+{
+    "version":8,
+    "devices":{
+        "Nothing":{
+            "description": "Unknown Device",
+            "ID":"0x0000"
+        },
+        "SDB":{
+            "description": "Self Describing Bus",
+            "ID":"0x0001"
+        },
+        "GPIO":{
+            "description": "General Purpose Input Output",
+            "ID":"0x0002"
+        },
+        "UART":{
+            "description": "Universal Asynchronous Receiver and Transmitter",
+            "ID":"0x0003"
+        },
+        "I2C":{
+            "description": "Inter-IC Communication",
+            "ID":"0x0004"
+        },
+        "SPI":{
+            "description": "Serial Peripheral Interface",
+            "ID":"0x0005"
+        },
+        "Memory":{
+            "description": "Generic Memory Device",
+            "ID":"0x0006"
+        },
+        "Console":{
+            "description": "Generic Output Console",
+            "ID":"0x0007"
+        },
+        "FSMC":{
+            "description": "Flexible Static Memory Controller",
+            "ID":"0x0008"
+        },
+        "LED":{
+            "description": "Light Emitting Diode",
+            "ID":"0x0009"
+        },
+        "Buttons":{
+            "description": "Buttons",
+            "ID":"0x000A"
+        },
+        "Frame Buffer":{
+            "description": "Generic Frame Buffer",
+            "ID":"0x000B"
+        },
+        "I2S":{
+            "description": "Generic Inter IC Sound",
+            "ID":"0x000C"
+        },
+        "Logic Analyzer":{
+            "description": "Logic Analyzer",
+            "ID":"0x000D"
+        },
+        "Camera":{
+            "description":"Camera",
+            "ID":"0x000E"
+        },
+        "Experiment":{
+            "description":"Experiment",
+            "ID":"0x000F"
+        },
+        "LCD":{
+            "description":"LCD Display",
+            "ID":"0x0010"
+        },
+        "STEPPER":{
+            "description":"Stepper Motor Controller",
+            "ID":"0x0011"
+        },
+        "Clock Synth":{
+            "description":"Clock Synthesizer",
+            "ID":"0x0012"
+        },
+        "DMA":{
+            "description":"Direct Memory Access controller",
+            "ID":"0x0013"
+        },
+        "Storage Manager":{
+            "description":"Manage Storage Devices like SATA",
+            "ID":"0x0014"
+        },
+        "DMA Reader":{
+            "description":"A test core for DMA Reader",
+            "ID":"0x0020"
+        },
+        "DMA Writer":{
+            "description":"A test core for DMA Writer",
+            "ID":"0x0021"
+        },
+        "Platform":{
+            "description":"A Nysa Platform",
+            "ID":"0x0022"
+        },
+        "SD Host":{
+            "description":"Controls SD Devices",
+            "ID":"0x0023"
+        },
+        "SDIO Device":{
+            "description":"Can be controlled with an SD Host",
+            "ID":"0x0024"
+        }
+    }
+}

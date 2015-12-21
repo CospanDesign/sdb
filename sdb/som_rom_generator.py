@@ -24,9 +24,9 @@ import sdb_component
 
 from sdb_object_model import SOMBus
 
-from sdb import SDBInfo
-from sdb import SDBWarning
-from sdb import SDBError
+from sdb_core import SDBInfo
+from sdb_core import SDBWarning
+from sdb_core import SDBError
 from sdb_component import SDB_INTERCONNECT_MAGIC
 from sdb_component import SDB_ROM_RECORD_LENGTH as RECORD_LENGTH
 
