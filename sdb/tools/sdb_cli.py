@@ -62,9 +62,6 @@ TOOL_DICT = collections.OrderedDict([
     })
 ])
 
-
-
-
 def update_epilog():
     global EPILOG
     tool_type_dict = collections.OrderedDict()
@@ -85,9 +82,7 @@ def update_epilog():
             EPILOG += "{0:5}{1:20}{2}\n".format("", tool, TOOL_DICT[tool]["module"].DESCRIPTION)
         EPILOG += "\n"
 
-
     EPILOG += "\n"
-
 
 def main():
     update_epilog()
