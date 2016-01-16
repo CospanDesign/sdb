@@ -25,9 +25,11 @@
 import os
 import argparse
 import collections
+import logging
+import sys
 
 #from completer_extractor import completer_extractor as ce
-import generator
+import generate
 import sdb_viewer
 
 __author__ = "dave.mccoy@cospandesign.com (Dave McCoy)"
@@ -43,17 +45,17 @@ EPILOG = "Enter the toolname with a -h to find help about that specific tool\n"
 
 
 TYPE_DICT = collections.OrderedDict()
-TYPE_DICT["generator"] = "Generation of SDB ROM and associated cores"
+TYPE_DICT["generate"] = "Generation of SDB ROM and associated cores"
 TYPE_DICT["parser"] = "Parse SDB ROM data to a python structure of file"
 TYPE_DICT["viewer"] = "View SDB structures"
 TYPE_DICT["utility"] = "Functions to aid users in adapting SDBt to their platform"
 
 
 TOOL_DICT = collections.OrderedDict([
-    (generator.NAME,{
-        "type": "generator",
-        "module": generator,
-        "tool": generator.generator
+    (generate.NAME,{
+        "type": "generate",
+        "module": generate,
+        "tool": generate.generate
     }),
     (sdb_viewer.NAME,{
         "type": "viewer",
@@ -61,6 +63,8 @@ TOOL_DICT = collections.OrderedDict([
         "tool": sdb_viewer.view_sdb
     })
 ])
+
+
 
 def update_epilog():
     global EPILOG
@@ -77,7 +81,7 @@ def update_epilog():
     EPILOG += "\n"
     EPILOG += "Tools:\n\n"
     for tool_type in tool_type_dict:
-        EPILOG += "{0:25}{1}\n\n".format(tool_type, tool_type_dict[tool_type]["description"])
+        #EPILOG += "{0}\n\n".format(tool_type_dict[tool_type]["description"])
         for tool in tool_type_dict[tool_type]["tools"]:
             EPILOG += "{0:5}{1:20}{2}\n".format("", tool, TOOL_DICT[tool]["module"].DESCRIPTION)
         EPILOG += "\n"
@@ -97,7 +101,6 @@ def main():
     #s.set_level(status.StatusLevel.INFO)
 
     #Global Flags
-    parser.add_argument("-v", "--verbose", action='store_true', help="Output verbose information")
     parser.add_argument("-d", "--debug", action='store_true', help="Output test debug information")
 
 
@@ -105,6 +108,7 @@ def main():
                                         description = DESCRIPTION,
                                         metavar = None,
                                         dest = "tool")
+
 
     for tool in TOOL_DICT:
         p = subparsers.add_parser(tool,
@@ -121,15 +125,21 @@ def main():
 
     args = parser.parse_args()
 
-    #if args.debug:
-    #    s.set_level(status.StatusLevel.DEBUG)
 
-    #if args.verbose:
-    #    s.set_level(status.StatusLevel.VERBOSE)
+    #Configure the Logger
+    log = logging.getLogger('sdb')
+    log.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(filename)s:%(module)s:%(funcName)s: %(message)s')
 
-    #print "args: %s" % str(args)
-    #print "args dict: %s" % str(dir(args))
-    #TOOL_DICT[args.tool]["tool"](args, s)
+    #Create a Console Handler
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(formatter)
+    ch.setLevel(logging.DEBUG)
+    log.addHandler(ch)
+
+    if args.debug:
+        log.setLevel(logging.DEBUG)
+
     TOOL_DICT[args.tool]["tool"](args)
 
 

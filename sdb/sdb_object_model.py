@@ -27,6 +27,8 @@ from sdb_core import SDBInfo
 from sdb_core import SDBWarning
 from sdb_core import SDBError
 
+DEPTH_SPACE = 4
+
 class SOMComponent(object):
 
     def __init__(self, parent, c):
@@ -688,41 +690,99 @@ class SOM(object):
         '''
 
     def pretty_print_sdb(self):
-        root = self.get_root() 
-        self._print_bus(root)
-
-    def _print_bus(self, bus, depth = 0):
-        c = bus.get_component()
-        for t in range (depth): print "\t",
-        s = "Bus: {0:<10} @ 0x{1:0=16X} : Size: 0x{2:0=8X}".format(bus.get_name(), c.get_start_address_as_int(), c.get_size_as_int())
+        root = self.get_root()
+        s = self._gen_bus_string(root, 1)
         print s
-        for t in range (depth): print "\t",
-        print "Number of components: %d" % bus.get_child_count()
+
+    @staticmethod
+    def _add_depth_spacing(depth):
+        s = ""
+        for i in range(depth):
+            for j in range(DEPTH_SPACE):
+                s += " "
+        return s
+
+    def _gen_url_record_string(self, component, depth):
+        s = ""
+        s += SOM._add_depth_spacing(depth)
+        s += "URL: %s\n" % component.get_url()
+        s += "\n"
+        return s
+
+    def _gen_synthesis_record_string(self, component, depth):
+        s = ""
+        s += SOM._add_depth_spacing(depth)
+        s += "Synthesis: {0:20} Date: {1:10}\n".format(component.get_name(),
+                                                       component.get_date())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Tool: {0:10} {1:6}\n".format(component.get_synthesis_tool_name(),
+                                           component.get_synthesis_tool_version())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Commit ID: {0:20}\n".format(component.get_synthesis_commit_id())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "User: {0:20}\n".format(component.get_synthesis_user_name())
+        s += "\n"
+        return s
+
+    def _gen_device_record_string(self, component, depth):
+        s = ""
+        name = component.get_name()
+        major = component.get_abi_version_major_as_int()
+        minor = component.get_abi_version_minor_as_int()
+        dev_name = device_manager.get_device_name_from_id(major)
+        s += SOM._add_depth_spacing(depth)
+        s += "Device: {0:20} Type (Major:Minor) ({1:0=2X}:{2:0=2X}): {3:10}\n".format(name,
+                                                                                      major,
+                                                                                      minor,
+                                                                                      dev_name)
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Address: 0x{0:0=16X}-0x{1:0=16X} : Size: 0x{2:0=8X}\n".format(component.get_start_address_as_int(),
+                                                            component.get_end_address_as_int(),
+                                                            component.get_size_as_int())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Vendor:Product: {0:0=16X}:{1:0=8X}\n".format(component.get_vendor_id_as_int(),
+                                                           component.get_device_id_as_int())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Version: {0:20}\n".format(component.get_core_version())
+        s += "\n"
+        return s
+
+    def _gen_integration_record_string(self, component, depth):
+        s = ""
+        s += SOM._add_depth_spacing(depth)
+        s += "Integration: {0:20}\n".format(component.get_name())
+        s += SOM._add_depth_spacing(depth + 1)
+        s += "Vendor:Product: {0:0=16X}:{1:0=8X}\n".format(component.get_vendor_id_as_int(),
+                                                           component.get_device_id_as_int())
+        s += "\n"
+        return s
+
+    def _gen_bus_string(self, bus, depth = 0):
+        s = ""
+        c = bus.get_component()
+        s += SOM._add_depth_spacing(depth)
+        s += "Bus: {0:<10} @ 0x{1:0=16X} : Size: 0x{2:0=8X}\n\n".format(bus.get_name(),
+                                                                      c.get_start_address_as_int(),
+                                                                      c.get_size_as_int())
 
         for i in range(bus.get_child_count()):
             c = bus.get_child_from_index(i)
             if self.is_entity_a_bus(bus, i):
-                self._print_bus(c, depth = depth + 1)
+                s += self._gen_bus_string(c, depth + 1)
             else:
-                c = bus.get_child_from_index(i)
                 c = c.get_component()
-                major = c.get_abi_version_major_as_int()
-                minor = c.get_abi_version_minor_as_int()
-                dev_name = device_manager.get_device_name_from_id(major)
-                for t in range(depth + 1): print "\t",
-                s = "{0:20} Type (Major:Minor) ({1:0=2X}:{2:0=2X}): {3:10}".format(c.get_name(),
-                                                   major,
-                                                   minor,
-                                                   dev_name)
-                print s
-                for t in range(depth + 1): print "\t",
-                s = "Address:        0x{0:0=16X}-0x{1:0=16X} : Size: 0x{2:0=8X}".format(c.get_start_address_as_int(),
-                                                                    c.get_end_address_as_int(),
-                                                                    c.get_size_as_int())
-                print s
-                for t in range(depth + 1): print "\t",
-                s = "Vendor:Product: {0:0=16X}:{1:0=8X}".format(c.get_vendor_id_as_int(),
-                                                                c.get_device_id_as_int())
-                print s
-                print ""
+                if c.is_url_record():
+                    s += self._gen_url_record_string(c, depth + 1)
+
+                if c.is_synthesis_record():
+                    s += self._gen_synthesis_record_string(c, depth + 1)
+
+                if c.is_device():
+                    s += self._gen_device_record_string(c, depth + 1)
+
+                if c.is_integration_record():
+                    s += self._gen_integration_record_string(c, depth + 1)
+
+        s += "\n"
+        return s
 

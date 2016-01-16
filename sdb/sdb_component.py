@@ -173,7 +173,7 @@ def create_synthesis_record(synthesis_name,
 def create_repo_url_record(url):
     sdb = SDBComponent()
     sdb.d["SDB_RECORD_TYPE"] = SDB_RECORD_TYPE_REPO_URL
-    sdb.d["SDB_RECORD_REPO_URL"] = url
+    sdb.d["SDB_MODULE_URL"] = url
     return sdb
 
 class SDBComponent (object):
@@ -374,6 +374,9 @@ class SDBComponent (object):
         #Base 10
         return version
 
+    def get_core_version(self):
+        return self.d["SDB_CORE_VERSION"]
+
     def get_date_as_int(self):
         date = self.d["SDB_DATE"]
         #print "date: %s" % date
@@ -381,6 +384,10 @@ class SDBComponent (object):
         month = int(date[5:7])
         day = int(date[9:10])
         return year, month, day
+
+    def get_date(self):
+        year, month, day = self.get_date_as_int()
+        return "%04d/%02d/%02d" % (year, month, day)
 
     def enable_executable(self, enable):
         self.d["SDB_EXECUTABLE"] = str(enable)
@@ -415,7 +422,7 @@ class SDBComponent (object):
         return self.d["SDB_SYNTH_TOOL_VER"]
 
     def get_synthesis_user_name(self):
-        return self.d["SDB_SYNTH_USERNAME"]
+        return self.d["SDB_SYNTH_USER_NAME"]
 
     def get_version_as_int(self):
         return int (self.d["SDB_VERSION"])
