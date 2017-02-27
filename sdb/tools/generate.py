@@ -21,6 +21,8 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import sys
 import json
@@ -59,7 +61,7 @@ def generate(args):
         f = open(filepath, 'r')
         s.debug("Opened File")
     except IOError as err:
-        print "Filename: %s does not exists!" % filepath
+        print ("Filename: %s does not exists!" % filepath)
         sys.exit(0)
 
     sdb_dict = None
@@ -67,8 +69,8 @@ def generate(args):
         sdb_dict = json.load(f, object_pairs_hook = OrderedDict)
         s.debug("Loaded JSON File")
     except ValueError as err:
-        print "Detected an Error in the JSON Configuration file:"
-        print str(err)
+        print ("Detected an Error in the JSON Configuration file:")
+        print (str(err))
         sys.exit(0)
 
     #Now we have an SDB structure in the form of a Python dictionary
@@ -83,7 +85,7 @@ def _extract_data(som, root_bus, bus_dict):
 
     if "devices" in bus_dict:
         for dev in bus_dict["devices"]:
-            print "dev index: %s" % str(dev)
+            #print ("dev index: %s" % str(dev))
             component = sdb_component.create_device_record(name = dev)
             c_dict = bus_dict["devices"][dev]
             ###: XXX REALLY BAD PROGRAMMING PRACTICE, THIS NEEDS TO CHANGE!!
@@ -154,7 +156,7 @@ def generate_som(sdb_dict):
 
     #Get the root bus name
     #print "SDB: %s" % str(sdb_dict)
-    root_name = sdb_dict.keys()[0]
+    root_name = list(sdb_dict.keys())[0]
     root = som.get_root()
     som.set_bus_name(root, root_name)
     _extract_data(som, root, sdb_dict[root_name])

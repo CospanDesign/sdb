@@ -18,13 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from array import array as Array
 import argparse
 import collections
 
-from sdb_core import SDB
-from sdb_core import SDBInfo
-from sdb_core import SDBError
+from .sdb_core import SDB
+from .sdb_core import SDBInfo
+from .sdb_core import SDBError
 
 SDB_INTERCONNECT_MAGIC  = 0x5344422D
 SDB_BUS_TYPE_WISHBONE   = 0x00

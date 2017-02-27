@@ -1,19 +1,22 @@
 import sys
 import os
 
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-import sdb_object_model
+from . import sdb_object_model
 
 #Helper functions to create all aspects of an an SDB ROM
-from sdb_component import create_device_record
-from sdb_component import create_interconnect_record
-from sdb_component import create_bridge_record
-from sdb_component import create_integration_record
-from sdb_component import create_synthesis_record
-from sdb_component import create_repo_url_record
+from .sdb_component import create_device_record
+from .sdb_component import create_interconnect_record
+from .sdb_component import create_bridge_record
+from .sdb_component import create_integration_record
+from .sdb_component import create_synthesis_record
+from .sdb_component import create_repo_url_record
 
-from sdb_component import convert_rom_to_32bit_buffer
+from .sdb_component import convert_rom_to_32bit_buffer
 
 
 class SDBGeneratorError(Exception):

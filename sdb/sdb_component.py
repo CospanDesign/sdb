@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Copyright (c) 2015 Dave McCoy (dave.mccoy@cospandesign.com)
 #
@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import sys
 from datetime import datetime
 from array import array as Array
 import collections
@@ -286,15 +290,20 @@ class SDBComponent (object):
         Raises:
             Nothing
         """
-        self.d["SDB_START_ADDRESS"] = hex(addr)
-        addr = long(addr)
+        #self.d["SDB_START_ADDRESS"] = hex(addr)
+        self.d["SDB_START_ADDRESS"] = "0x%X" % (addr)
+        addr = int(addr)
+        if sys.version_info < (3,):
+            addr = long(addr)
         self.d["SDB_LAST_ADDRESS"] = hex(addr + self.get_size_as_int())
 
     def get_start_address_as_int(self):
-        return long(self.d["SDB_START_ADDRESS"], 16)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_START_ADDRESS"], 16)
+        return int(self.d["SDB_START_ADDRESS"], 16)
 
     def set_size(self, size):
-        self.d["SDB_SIZE"] = hex(size)
+        self.d["SDB_SIZE"] = "0x%X" % size
         start_addr = self.get_start_address_as_int()
         self.d["SDB_LAST_ADDRESS"] = hex(start_addr + self.get_size_as_int())
 
@@ -321,13 +330,19 @@ class SDBComponent (object):
 
 #Integer Rerpresentation of values
     def get_size_as_int(self):
-        return long(self.d["SDB_SIZE"], 0)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_SIZE"], 0)
+        return int(self.d["SDB_SIZE"], 0)
 
     def get_end_address_as_int(self):
-        return long(self.d["SDB_LAST_ADDRESS"], 16)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_LAST_ADDRESS"], 16)
+        return int(self.d["SDB_LAST_ADDRESS"], 16)
 
     def get_vendor_id_as_int(self):
-        return long(self.d["SDB_VENDOR_ID"], 16)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_VENDOR_ID"], 16)
+        return int(self.d["SDB_VENDOR_ID"], 16)
 
     def get_device_id_as_int(self):
         #print "device id: %s" % self.d["SDB_DEVICE_ID"]
@@ -337,10 +352,14 @@ class SDBComponent (object):
         return int(self.d["SDB_ABI_CLASS"], 16)
 
     def get_abi_version_major_as_int(self):
-        return long(self.d["SDB_ABI_VERSION_MAJOR"], 16)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_ABI_VERSION_MAJOR"], 16)
+        return int(self.d["SDB_ABI_VERSION_MAJOR"], 16)
 
     def get_abi_version_minor_as_int(self):
-        return long(self.d["SDB_ABI_VERSION_MINOR"], 16)
+        if sys.version_info < (3,):
+            return long(self.d["SDB_ABI_VERSION_MINOR"], 16)
+        return int(self.d["SDB_ABI_VERSION_MINOR"], 16)
 
     def get_endian_as_int(self):
         if string.upper(self.d["SDB_ABI_ENDIAN"]) == "LITTLE":

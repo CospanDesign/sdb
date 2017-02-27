@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Copyright (c) 2015 Dave McCoy (dave.mccoy@cospandesign.com)
 #
@@ -18,12 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 __author__ = "dave.mccoy@cospandesign.com (Dave McCoy)"
 
 from array import array as Array
 import collections
 
-from nysa.common.status import Status
 
 class SDBError(Exception):
     pass
@@ -36,11 +38,8 @@ class SDBInfo(Exception):
 
 class SDB (object):
 
-    def __init__(self, status = None):
+    def __init__(self):
         self.d = {}
-        self.s = status
-        if status is None:
-            self.s = Status()
 
         for e in self.ELEMENTS:
             self.d[e] = ""

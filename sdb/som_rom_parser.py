@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, division, print_function
+
+import sys
 from array import array as Array
 from sdb_component import SDBComponent as sdbc
 import sdb_component
@@ -41,6 +44,16 @@ from sdb_component import SDB_RECORD_TYPE_EMPTY
 
 
 
+def read_and_strip (rom, start, end):
+    data = rom[start:end]
+    if sys.version_info > (3,):
+        #print ("Before: %s" % data)
+        data = data.tobytes()
+        #print ("string: %s" % data)
+        data = data.strip(b'\x00').decode('utf-8')
+    else:
+        data = data.tostring().strip("\0")
+    return data
 
 #Public Facing Functions
 def parse_rom_image(rom):
@@ -65,7 +78,7 @@ def _parse_bus(som, bus, rom, addr):
     num_devices = 0
     if bus is None:
         #This is the top element
-        som = SOM()
+        som = SOM(auto_address = False)
         som.initialize_root()
         bus = som.get_root()
 
@@ -93,8 +106,9 @@ def _parse_bus(som, bus, rom, addr):
         entity = parse_rom_element(rom, I)
 
         #Gather spacing data to analyze later
-        end = long(entity.get_end_address_as_int())
-        start = long(entity.get_start_address_as_int())
+        end = entity.get_end_address_as_int()
+        start = entity.get_start_address_as_int()
+
         entity_addr_start.append(start)
         entity_size.append(end - start)
 
@@ -139,7 +153,7 @@ def _parse_bus(som, bus, rom, addr):
 
         prev_size = size
         prev_start = start_addr
-       
+
     #print "\tspacing for %s: 0x%08X" % (bus.get_name(), spacing)
     #bus.set_child_spacing(spacing)
     som.set_child_spacing(bus, spacing)
@@ -183,7 +197,8 @@ def _parse_integration_element(entity, rom, addr, debug = False):
     _parse_rom_component_element(entity, rom, addr, debug)
 
 def _parse_repo_url_element(entity, rom, addr, debug = False):
-    entity.d["SDB_MODULE_URL"] = rom[addr:addr + RECORD_LENGTH - 1].tostring().strip("\0")
+    #entity.d["SDB_MODULE_URL"] = rom[addr:addr + RECORD_LENGTH - 1].tostring().strip("\0")
+    endity.d["SDB_MODULE_URL"] = read_and_string(rom, addr, addr + RECORD_LENGTH - 1)
 
 def _parse_rom_device_element(entity, rom, addr, debug = False):
     entity.d["SDB_ABI_CLASS"] = hex(  rom[addr + 0] <<  8 | \
@@ -199,7 +214,7 @@ def _parse_rom_device_element(entity, rom, addr, debug = False):
     if executable:
         entity.d["SDB_EXECUTABLE"] = "True"
     else:
-        entity.d["SDB_EXECUTABLE"] = "False" 
+        entity.d["SDB_EXECUTABLE"] = "False"
 
     if writeable:
         entity.d["SDB_WRITEABLE"] = "True"
@@ -253,8 +268,9 @@ def _parse_rom_interconnect_element(entity, rom, addr, debug = False):
 def _parse_rom_component_element(entity, rom, addr, debug = False):
     entity.d["SDB_START_ADDRESS"] =   hex(_convert_rom_to_int(rom[addr +  8: addr + 16]))
     entity.d["SDB_LAST_ADDRESS"] =    hex(_convert_rom_to_int(rom[addr + 16: addr + 24]))
-    start_address = long(entity.d["SDB_START_ADDRESS"], 16)
-    end_address = long(entity.d["SDB_LAST_ADDRESS"], 16)
+
+    start_address = entity.get_start_address_as_int()
+    end_address = entity.get_end_address_as_int()
     entity.set_size(end_address - start_address)
     _parse_rom_product_element(entity, rom, addr, debug)
 
@@ -274,13 +290,18 @@ def _parse_rom_product_element(entity, rom, addr, debug = False):
                                                                 date >> 8 & 0xFF,
                                                                 date & 0xFF)
     #print "Date: %s" % entity.d["SDB_DATE"]
-    entity.d["SDB_NAME"] =            rom[addr + 44:addr + 63].tostring().strip("\0")
+    #entity.d["SDB_NAME"] =            rom[addr + 44:addr + 63].tostring().strip("\0")
+    entity.d["SDB_NAME"] =            read_and_strip(rom, addr + 44, addr + 63)
 
 def _parse_synthesis_element(entity, rom, addr, debug = False):
-    entity.d["SDB_SYNTH_NAME"] =      rom[addr + 0x00:addr + 0x10].tostring().strip("\0")
-    entity.d["SDB_SYNTH_COMMIT_ID"] = rom[addr + 0x10:addr + 0x20].tostring().strip("\0")
-    entity.d["SDB_SYNTH_TOOL_NAME"] = rom[addr + 0x20:addr + 0x28].tostring().strip("\0")
-    entity.d["SDB_SYNTH_TOOL_VER"] =  rom[addr + 0x28:addr + 0x2C].tostring()
+    #entity.d["SDB_SYNTH_NAME"] =      rom[addr + 0x00:addr + 0x10].tostring().strip("\0")
+    entity.d["SDB_SYNTH_NAME"] =      read_and_strip(rom, addr + 0x00, addr + 0x10)
+    #entity.d["SDB_SYNTH_COMMIT_ID"] = rom[addr + 0x10:addr + 0x20].tostring().strip("\0")
+    entity.d["SDB_SYNTH_COMMIT_ID"] = read_and_strip(rom, addr + 0x10, addr + 0x20)
+    #entity.d["SDB_SYNTH_TOOL_NAME"] = rom[addr + 0x20:addr + 0x28].tostring().strip("\0")
+    entity.d["SDB_SYNTH_TOOL_NAME"] = read_and_strip(rom, addr + 0x20, addr + 0x28)
+    #entity.d["SDB_SYNTH_TOOL_VER"] =  rom[addr + 0x28:addr + 0x2C].tostring()
+    entity.d["SDB_SYNTH_TOOL_VER"] =  read_and_strip(rom, addr + 0x28, addr + 0x2C)
     date =                            _convert_rom_to_int(rom[addr + 0x2C: addr + 0x30])
     entity.d["SDB_DATE"] =            "%02d%02d/%02d/%02d" % (  date >> 24 & 0xFF,
                                                                 date >> 16 & 0xFF,
@@ -288,7 +309,8 @@ def _parse_synthesis_element(entity, rom, addr, debug = False):
                                                                 date & 0xFF)
 
     #entity.d["SDB_DATE"]       =      rom[addr + 40:addr + 48].tostring()
-    entity.d["SDB_SYNTH_USER_NAME"] = rom[addr + 0x30:addr + 0x3F].tostring().strip("\0")
+    #entity.d["SDB_SYNTH_USER_NAME"] = rom[addr + 0x30:addr + 0x3F].tostring().strip("\0")
+    entity.d["SDB_SYNTH_USER_NAME"] = read_and_strip(rom, addr + 0x30, addr + 0x3F)
 
 def _convert_rom_to_int(rom):
     s = ""

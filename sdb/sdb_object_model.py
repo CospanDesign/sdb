@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sdb_component
 import device_manager
 from sdb_component import SDBComponent as sdbc
@@ -161,11 +164,12 @@ class SOMRoot(SOMBus):
 #User Facing Object
 class SOM(object):
 
-    def __init__(self):
+    def __init__(self, auto_address = True):
         self.root = None
         self.reset_som()
         self.current_rot = self.root
         self.current_pos = 0
+        self.auto_address = auto_address
 
     #Bus Functions
     def initialize_root(self,
@@ -581,6 +585,7 @@ class SOM(object):
         bus_size = 0
         rc = root.get_component()
         start_address = rc.get_start_address_as_int()
+        #print ("Root: %s: Start: 0x%08X" % (root.c.get_name(), start_address))
         spacing = root.get_child_spacing()
 
         '''
@@ -627,9 +632,14 @@ class SOM(object):
         for i in range(root.get_child_count()):
             child = root.get_child_from_index(i)
             c = child.get_component()
+            #print ("Child Name: %s" % c.get_name())
             if prev_child is None:
+                #print ("First Item")
+                #print ("Address: %08X" % c.get_start_address_as_int())
                 #First child should always be 0 relative to this bus
-                c.set_start_address(0x00)
+
+                if self.auto_address:
+                    c.set_start_address(0x00)
                 prev_child = child
                 if isinstance(child, SOMBus):
                     #print "Found bus, initate recursive update"
@@ -638,12 +648,16 @@ class SOM(object):
                 #Bus Size
                 #bus_size = c.get_start_address_as_int() + c.get_size_as_int()
                 #print "bus size: 0x%08X" % bus_size
-                if spacing == 0:
-                    bus_size += c.get_size_as_int()
+                if self.auto_address:
+                    if spacing == 0:
+                        bus_size += c.get_size_as_int()
+                    else:
+                        mul = (c.get_size_as_int() / spacing) + 1
+                        bus_size += mul * spacing
+
                 else:
-                    mul = (c.get_size_as_int() / spacing) + 1
-                    #print "mul for %s: %d" % (c.get_name(), mul)
-                    bus_size += mul * spacing
+                    bus_size = c.get_start_address_as_int() + c.get_size_as_int()
+
                 continue
 
             pc = prev_child.get_component()
@@ -655,8 +669,6 @@ class SOM(object):
             prev_start_address = pc.get_start_address_as_int()
             prev_child_size = pc.get_size_as_int()
 
-            #current_start_address = c.get_start_address_as_int()
-
             #Add an extra spacing size so that all divided values will at least
             #be one
             spacing_size = prev_child_size
@@ -664,19 +676,28 @@ class SOM(object):
                 mul = (prev_child_size / spacing) + 1
                 spacing_size = mul * spacing
 
+
+            current_start_address = c.get_start_address_as_int()
             new_child_start_address = prev_start_address + spacing_size
-            #if current_start_address < new_child_start_address:
-            c.set_start_address(new_child_start_address)
+            if self.auto_address and (current_start_address < new_child_start_address):
+                    #print ("New child start address: 0x%016X" % new_child_start_address)
+                    c.set_start_address(new_child_start_address)
+
             prev_child = child
 
             if spacing == 0:
                 bus_size += c.get_size_as_int()
             else:
                 mul = (c.get_size_as_int() / spacing) + 1
-                #print "mul for %s: %d" % (c.get_name(), mul)
                 bus_size += mul * spacing
 
+
         #print "\tbus size: 0x%08X" % bus_size
+        if not self.auto_address and root.get_child_count() > 0:
+            child = root.get_child_from_index(root.get_child_count() - 1)
+            c = child.get_component()
+            bus_size = c.get_start_address_as_int() + c.get_size_as_int()
+
         rc.set_size(bus_size)
         rc.set_number_of_records(root.get_child_count())
 
@@ -692,7 +713,7 @@ class SOM(object):
     def pretty_print_sdb(self):
         root = self.get_root()
         s = self._gen_bus_string(root, 1)
-        print s
+        print (s)
 
     @staticmethod
     def _add_depth_spacing(depth):
@@ -764,6 +785,7 @@ class SOM(object):
         s += "Bus: {0:<10} @ 0x{1:0=16X} : Size: 0x{2:0=8X}\n\n".format(bus.get_name(),
                                                                       c.get_start_address_as_int(),
                                                                       c.get_size_as_int())
+
 
         for i in range(bus.get_child_count()):
             c = bus.get_child_from_index(i)

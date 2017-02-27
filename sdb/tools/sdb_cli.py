@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 #Distributed under the MIT licesnse.
 #Copyright (c) 2015 Dave McCoy (dave.mccoy@cospandesign.com)
@@ -21,6 +21,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import argparse
@@ -29,8 +30,8 @@ import logging
 import sys
 
 #from completer_extractor import completer_extractor as ce
-import generate
-import sdb_viewer
+from . import generate
+from . import sdb_viewer
 
 __author__ = "dave.mccoy@cospandesign.com (Dave McCoy)"
 
@@ -48,7 +49,7 @@ TYPE_DICT = collections.OrderedDict()
 TYPE_DICT["generate"] = "Generation of SDB ROM and associated cores"
 TYPE_DICT["parser"] = "Parse SDB ROM data to a python structure of file"
 TYPE_DICT["viewer"] = "View SDB structures"
-TYPE_DICT["utility"] = "Functions to aid users in adapting SDBt to their platform"
+TYPE_DICT["utility"] = "Functions to aid users in adapting SDB to their platform"
 
 
 TOOL_DICT = collections.OrderedDict([

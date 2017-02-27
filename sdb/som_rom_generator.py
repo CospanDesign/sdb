@@ -18,17 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with Nysa; If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from array import array as Array
-from sdb_component import SDBComponent as sdbc
-import sdb_component
+from .sdb_component import SDBComponent as sdbc
+from . import sdb_component
 
-from sdb_object_model import SOMBus
+from .sdb_object_model import SOMBus
 
-from sdb_core import SDBInfo
-from sdb_core import SDBWarning
-from sdb_core import SDBError
-from sdb_component import SDB_INTERCONNECT_MAGIC
-from sdb_component import SDB_ROM_RECORD_LENGTH as RECORD_LENGTH
+from .sdb_core import SDBInfo
+from .sdb_core import SDBWarning
+from .sdb_core import SDBError
+from .sdb_component import SDB_INTERCONNECT_MAGIC
+from .sdb_component import SDB_ROM_RECORD_LENGTH as RECORD_LENGTH
 
 #Public facing functions
 def generate_rom_image(som):

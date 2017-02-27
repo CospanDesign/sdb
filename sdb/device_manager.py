@@ -1,26 +1,23 @@
-'''
-Copyright (c) 2015 Dave McCoy (dave.mccoy@cospandesign.com)
+# Copyright (c) 2015 Dave McCoy (dave.mccoy@cospandesign.com)
+# 
+# This file is part of Nysa.
+# (http://wiki.cospandesign.com/index.php?title=Nysa.org)
+# 
+# Nysa is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+# 
+# Nysa is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Nysa; If not, see <http://www.gnu.org/licenses/>.
+# 
 
-This file is part of Nysa.
-(http://wiki.cospandesign.com/index.php?title=Nysa.org)
-
-Nysa is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-any later version.
-
-Nysa is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Nysa; If not, see <http://www.gnu.org/licenses/>.
-'''
-
-'''
-Functions to manage devices
-'''
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import sys
@@ -30,8 +27,13 @@ from collections import OrderedDict as odict
 
 __author__ = "dave.mccoy@cospandesign.com (Dave McCoy)"
 
+'''
+Functions to manage devices
+'''
+
 LOCAL_DEVICE_LIST = os.path.join(os.path.dirname(__file__), "data", "local_devices", "devices.json")
 LOCAL_DEVICE_LIST = os.path.abspath(LOCAL_DEVICE_LIST)
+
 
 def get_device_list():
     """Return a list of device names where the index corresponds to the device
@@ -55,7 +57,7 @@ def get_device_list():
         f = open(LOCAL_DEVICE_LIST, "r")
         sdb_tags = json.load(f, object_pairs_hook = odict)
     except TypeError as err:
-        print "JSON Error: %s" % str(err)
+        print ("JSON Error: %s" % str(err))
         raise SDBError("DRT Error: %s", str(err))
 
     dev_tags = sdb_tags["devices"]
@@ -101,7 +103,7 @@ def get_device_name_from_id(device_id):
         f = open(LOCAL_DEVICE_LIST, "r")
         sdb_tags = json.load(f)
     except TypeError as err:
-        print "JSON Error: %s" % str(err)
+        print ("JSON Error: %s" % str(err))
         raise SDBError("DRT Error: %s", str(err))
 
     dev_tags = sdb_tags["devices"]
@@ -138,7 +140,7 @@ def get_device_id_from_name(name):
         f = open(LOCAL_DEVICE_LIST, "r")
         sdb_tags = json.load(f)
     except TypeError as err:
-        print "JSON Error: %s" % str(err)
+        print ("JSON Error: %s" % str(err))
         raise SDBError("DRT Error: %s", str(err))
 
     dev_tags = sdb_tags["devices"]

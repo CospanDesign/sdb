@@ -21,14 +21,17 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
-import sdb.tools.sdb_cli
+
+from sdb.tools import sdb_cli
 
 #Basically an empty script because python couldn't import a file that didn't
 #   have a .py ending, so most of the work is in sdb.tools.nysa_cli
 
 if __name__ == "__main__":
-    sdb.tools.sdb_cli.main()
+    sdb_cli.main()
